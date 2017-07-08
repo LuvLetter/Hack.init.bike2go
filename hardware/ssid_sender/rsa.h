@@ -109,8 +109,8 @@ long* rsa_encrypt(char* plaintext, long* key) {
 	plaintext_list = string2ascii_int_list(plaintext);
         
 	ciphertext_list = new long[length];
-	Serial.write("inside hell called rsa_encrypt\n");
-  
+	Serial.write("inside hell called rsa_encrypt");
+  Serial.println(length);
 	for (int i = 0; i < length; ++i) {
     Serial.write("plaintext_list["); Serial.print(i); Serial.print("] = "); Serial.println((plaintext_list[i]));
     ciphertext_list[i] = raiseto_mod(plaintext_list[i], key[1], key[0]);
