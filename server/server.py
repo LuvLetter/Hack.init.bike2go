@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python
 from http.server import BaseHTTPRequestHandler, HTTPServer
 # import MySQLdb
@@ -8,6 +7,35 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 from bikeObj import bike
 import sqlite3 as lite
 import aes
+
+
+def isLegalRequest(bike):
+  if(decrypt(bike)!=bike.bikeId):                                       
+    return False
+  return True
+
+def updateLocation(bike,lng,lat):
+  if(isLegalRequest(bike)):
+    bike.lng = lng
+    bike.lat = lat
+  return
+
+def updateStatus(bike, status):
+  if(isLegalRequest(bike)):
+    bike.status = status
+  return
+
+def update(bike, bikeStatus):
+  updateLocation(bike,lng,lat)
+  updateStatus(bike, bikeStatus)
+  return 
+
+
+def getPassword(bikeId,bikeStatus):
+  if isLegalRequest(bikeId, bikeStatus):
+    return "123"
+  return
+
 bikeNo = 1
 NAME = "bikedb.sqlite"
 con = lite.connect(NAME)
@@ -22,23 +50,15 @@ thisBike = bike(*rows[0])
 # ssl_key = "/home/jhl/client-key.pem"
 # ssl_ca = "/home/jhl/server-ca.pem"
 # print()
-# cnx = MySQLdb.connector.connect(user='scott', password='tiger',
-#                               host='127.0.0.1',
-#                               database='employees')
-# cnx = MySQLdb.connect(user='joe', database='test')
-# cnx = MySQLConnection(user='joe', database='test')
 # db = MySQLdb.connect(
 #           host='35.190.234.86',
           # ssl_ca = "/home/jhl/Desktop/client/server-ca.pem",
           # ssl_cert = "/home/jhl/Desktop/client/client-cert.pem",
           # ssl_key = "/home/jhl/Desktop/client/client-key.pem",
-          # user='jhl', passwd='13757121426')
+          # user='jhl', passwd='')
 # cnx = mysql.connector.connect(user='jhl', database='bikes')
 # cnx = MySQLConnection(user='jhl', database='bikes')
 
-def decrypt(bike):
-
-  return 
 
 def isLegalRequest(bike):
   if(decrypt(bike)!=bike.bikeId):                                       
