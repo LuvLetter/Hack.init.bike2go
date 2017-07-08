@@ -21,6 +21,28 @@ along with the software.  If not, see <http://www.gnu.org/licenses/>.
 
 
 #include "util.h"
+int test3(long n, long k, long q);
+long* findkq(long n);
+long* findkq(long n);
+bool isprime(long n, int iterations = 1){
+  // Primality test using Miller-Rabin algorithm
+  if (n % 2 == 0){
+          
+          return 0;
+  }
+  long *t1 = findkq(n);
+  //long k = t1[0];
+  //long q = t1[1];
+
+  for (int i = 0; i < iterations; i++){
+    int result = test3(n,t1[0],t1[1]);
+    if (result == 1) {
+      return 0;
+    }
+  }
+            
+  return 1;
+}
 
 char* dec2bin(int n) {
 	long r;
@@ -110,7 +132,8 @@ long* rsa_decrypt(long* ciphertext_list, long* key, int length) {
 	return plaintext_list;
 }
 
-/* The following functions can be used for generating a pair of RSA keys.
+
+
 
 long gcd(long a, long b){
   // Returns greatest common denominator by using recursive Euclidean algorithm
@@ -202,25 +225,6 @@ int test3(long n, long k, long q){
   return 1; //"composite";
 }
 
-bool isprime(long n, int iterations = 1){
-  // Primality test using Miller-Rabin algorithm
-  if (n % 2 == 0){
-          
-          return 0;
-  }
-  long *t1 = findkq(n);
-  //long k = t1[0];
-  //long q = t1[1];
-
-  for (int i = 0; i < iterations; i++){
-    int result = test3(n,t1[0],t1[1]);
-    if (result == 1) {
-      return 0;
-    }
-  }
-            
-  return 1;
-}
 
 long* generate_keys(long lower, long upper) {
   long n, phi_n, p, q, e, d;
@@ -246,4 +250,4 @@ long* generate_keys(long lower, long upper) {
   
   return Key;
 }
-*/
+
