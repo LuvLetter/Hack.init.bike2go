@@ -1,45 +1,70 @@
 
 #!/usr/bin/env python
- 
 from http.server import BaseHTTPRequestHandler, HTTPServer
-import MySQLdb
-import mysql
-import os
+# import MySQLdb
+# import os
+from bikeObj import bike
+import sqlite3 as lite
+bikeNo = 1
+NAME = "bikedb.sqlite"
+con = lite.connect(NAME)
+c = con.cursor()
+c.execute(
+"SELECT * FROM Bikes WHERE Bid = %d"%bikeNo
+)
+rows = c.fetchall()
+thisBike = bike(*rows[0])
 
-
-ssl_cert = "/home/jhl/client-cert.pem"
-ssl_key = "/home/jhl/client-key.pem"
-ssl_ca = "/home/jhl/server-ca.pem"
-
+# ssl_cert = "/home/jhl/client-cert.pem"
+# ssl_key = "/home/jhl/client-key.pem"
+# ssl_ca = "/home/jhl/server-ca.pem"
+# print()
 # cnx = MySQLdb.connector.connect(user='scott', password='tiger',
 #                               host='127.0.0.1',
 #                               database='employees')
-cnx = mysql.connector.connect(user='joe', database='test')
-cnx = MySQLConnection(user='joe', database='test')
-db = mysql.connect(
-          host='35.190.234.86',
+# cnx = MySQLdb.connect(user='joe', database='test')
+# cnx = MySQLConnection(user='joe', database='test')
+# db = MySQLdb.connect(
+#           host='35.190.234.86',
           # ssl_ca = "/home/jhl/Desktop/client/server-ca.pem",
           # ssl_cert = "/home/jhl/Desktop/client/client-cert.pem",
           # ssl_key = "/home/jhl/Desktop/client/client-key.pem",
-          user='root', passwd='13757121426')
-
+          # user='jhl', passwd='13757121426')
 # cnx = mysql.connector.connect(user='jhl', database='bikes')
 # cnx = MySQLConnection(user='jhl', database='bikes')
 
-def isLegalRequest(bikeId, bikeStatus):
-  if(0==1):                                       
+# https://docs.python.org/3/library/csv.html
+#sample data
+# with open('bikeList.csv', 'w') as csvfile:
+#     fieldnames = ['bikeId','n', 'e','d','status','location']
+#     writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+#     writer.writeheader()
+#     writer.writerow({'bikeId': '1','n':'123','e': '123','d':'123','status':"1",'location':'1'})
+    # writer.writerow({'first_name': 'Lovely', 'last_name': 'Spam'})
+    # writer.writerow({'first_name': 'Wonderful', 'last_name': 'Spam'})
+
+def decrypt(bike):
+  return 1
+
+def isLegalRequest(bike):
+  if(decrypt(bike)!=bike.bikeId):                                       
     return False
   return True
 
-def updateLocation(bikeId,bikeStatus):
+def updateLocation(bike,lng,lat):
+  if(isLegalRequest(bike)):
+    bike.lng = lng
+    bike.lat = lat
   return
 
-def updateStatus(bikeId, bikeStatus):
+def updateStatus(bike, status):
+  if(isLegalRequest(bike)):
+    bike.status = status
   return
 
-def update(bikeId, bikeStatus):
-  updateLocation(bikeId,bikeStatus)
-  updateStatus(bikeId, bikeStatus)
+def update(bike, bikeStatus):
+  updateLocation(bike,lng,lat)
+  updateStatus(bike, bikeStatus)
   return 
 
 
