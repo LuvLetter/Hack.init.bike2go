@@ -1,0 +1,18 @@
+// Set SSID
+int mac_addr1 = 128;
+int mac_addr2 = 222;
+int mac_addr3 = 123;
+int mac_addr4 = 233;
+int mac_addr5 = 123;
+
+//
+uint8_t pri_key[] = "MIIBOAIBAAJAZeQm4YBNDB/U8kqDnGB6wT2JXlnZFOr8sq3Cb7A9ApFSKF5B8K6g
+Ziwpz0EbF9BTF6tNPxlbd5/1YZnr6niovwIDAQABAkAQKBViPI37FjEWGmq0KThN
+3AwkQesCPiDD1Hm4bCHAfkcgMOPfdzqqbVO3+N1n7na89oYRC/We2pfZP7EjSD9B
+AiEAs2NR2YjrKgdRG/VqfOlQqmVUQFqEBG5b+TuBBdWIia0CIQCRaAdhf7rvh9ju
+lSS5W7sC31csPQUdOVi1stHkoQYhmwIgeNS9nTmMrZKgH6T/RYQiwaPfTDmsExAD
+A64BClz6y0ECIATf3Od61bRz9GTDITEJjzJgdFaqUQKSypOExB6K+16jAiBXHBwr
+yulcJ1iEF7neRU98LhGWzxM4k6Ejdlt85anqPw=="
+
+uint8_t pub_key[] = "MFswDQYJKoZIhvcNAQEBBQADSgAwRwJAZeQm4YBNDB/U8kqDnGB6wT2JXlnZFOr8
+sq3Cb7A9ApFSKF5B8K6gZiwpz0EbF9BTF6tNPxlbd5/1YZnr6niovwIDAQAB"

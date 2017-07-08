@@ -46,6 +46,9 @@
 *.mod*
 *.cmd
 .tmp_versions/
+
+# Config Files
+config.h
 modules.order
 Module.symvers
 Mkfile.old
