@@ -3,8 +3,11 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 # import MySQLdb
 # import os
+
+
 from bikeObj import bike
 import sqlite3 as lite
+import aes
 bikeNo = 1
 NAME = "bikedb.sqlite"
 con = lite.connect(NAME)
@@ -33,18 +36,9 @@ thisBike = bike(*rows[0])
 # cnx = mysql.connector.connect(user='jhl', database='bikes')
 # cnx = MySQLConnection(user='jhl', database='bikes')
 
-# https://docs.python.org/3/library/csv.html
-#sample data
-# with open('bikeList.csv', 'w') as csvfile:
-#     fieldnames = ['bikeId','n', 'e','d','status','location']
-#     writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-#     writer.writeheader()
-#     writer.writerow({'bikeId': '1','n':'123','e': '123','d':'123','status':"1",'location':'1'})
-    # writer.writerow({'first_name': 'Lovely', 'last_name': 'Spam'})
-    # writer.writerow({'first_name': 'Wonderful', 'last_name': 'Spam'})
-
 def decrypt(bike):
-  return 1
+
+  return 
 
 def isLegalRequest(bike):
   if(decrypt(bike)!=bike.bikeId):                                       
@@ -78,6 +72,7 @@ class testHTTPServer_RequestHandler(BaseHTTPRequestHandler):
  
   # GET
   def do_GET(self):
+
         # Send response status code
         self.send_response(200)
  
