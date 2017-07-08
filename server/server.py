@@ -2,6 +2,29 @@
 #!/usr/bin/env python
  
 from http.server import BaseHTTPRequestHandler, HTTPServer
+import MySQLdb
+import mysql
+import os
+
+
+ssl_cert = "/home/jhl/client-cert.pem"
+ssl_key = "/home/jhl/client-key.pem"
+ssl_ca = "/home/jhl/server-ca.pem"
+
+# cnx = MySQLdb.connector.connect(user='scott', password='tiger',
+#                               host='127.0.0.1',
+#                               database='employees')
+cnx = mysql.connector.connect(user='joe', database='test')
+cnx = MySQLConnection(user='joe', database='test')
+db = mysql.connect(
+          host='35.190.234.86',
+          # ssl_ca = "/home/jhl/Desktop/client/server-ca.pem",
+          # ssl_cert = "/home/jhl/Desktop/client/client-cert.pem",
+          # ssl_key = "/home/jhl/Desktop/client/client-key.pem",
+          user='root', passwd='13757121426')
+
+# cnx = mysql.connector.connect(user='jhl', database='bikes')
+# cnx = MySQLConnection(user='jhl', database='bikes')
 
 def isLegalRequest(bikeId, bikeStatus):
   if(0==1):                                       
