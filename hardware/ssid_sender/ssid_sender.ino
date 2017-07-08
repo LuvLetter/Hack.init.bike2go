@@ -58,23 +58,27 @@ inline void constructBeaconPacket(uint8_t mac[6], uint8_t ssid_len, uint8_t *ssi
 void setup() {
   Serial.begin(115200);
   WiFi.printDiag(Serial);
+  EEPROM.begin(512);
   delay(500);
 //  Serial.println((char*)pri_key);
   delayMicroseconds(100000);
   EEPROM.write(addr, 232);
-  int value = EEPROM.read(addr);
+  byte value = EEPROM.read(addr);
   Serial.println(value);
   
   wifi_set_opmode(STATION_MODE);
   wifi_promiscuous_enable(1);
   wifi_set_channel(6); 
+  char text[] = "233";
+  rsa_encrypt(pub_key, text);
   
 }
 
 void loop() {
-  EEPROM.write(addr, 232);
+  byte a = 8;
+  EEPROM.write(addr, a);
   uint8_t ssid[] = "somename";
-  int value = EEPROM.read(addr);
+  byte value = EEPROM.read(addr);
   Serial.println("some");
   Serial.println(value);
   // if (random(2)) {
@@ -94,5 +98,5 @@ void loop() {
   wifi_send_pkt_freedom(packet, 51 + sizeof(ssid), 0);
   wifi_send_pkt_freedom(packet, 51 + sizeof(ssid), 0);
   //Serial.println(" Packets sent");
-  delayMicroseconds(1000);
+  delayMicroseconds(100000);
 }
