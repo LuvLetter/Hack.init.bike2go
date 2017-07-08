@@ -31,6 +31,7 @@ uint8_t packet[PACKET_LEN] = { 0x80, 0x00, 0x00, 0x00,
                              };
 uint8_t len;
 uint8_t mac[6] = { 0x00, mac_addr1, mac_addr2, mac_addr3, mac_addr4, mac_addr5 };
+long *keys;
 
 inline void constructBeaconPacket(uint8_t mac[6], uint8_t ssid_len, uint8_t *ssid, uint8_t channel) {
   uint8_t packet_end[13] = {
@@ -58,29 +59,47 @@ inline void constructBeaconPacket(uint8_t mac[6], uint8_t ssid_len, uint8_t *ssi
 void setup() {
   Serial.begin(115200);
   WiFi.printDiag(Serial);
-  EEPROM.begin(512);
   delay(500);
-//  Serial.println((char*)pri_key);
   delayMicroseconds(100000);
   EEPROM.write(addr, 232);
+  
+  EEPROM.begin(512);
+  EEPROM.write(addr, 0);
+  EEPROM.write(addr+1, 0);
   byte value = EEPROM.read(addr);
-  Serial.println(value);
+
   
   wifi_set_opmode(STATION_MODE);
   wifi_promiscuous_enable(1);
   wifi_set_channel(6); 
   char text[] = "233";
-  rsa_encrypt(pub_key, text);
+  if(EEPROM.read(addr)==0) {
+      keys = generate_keys(3, 1759);
+      Serial.println(keys[0]);
+      Serial.println(keys[1]);
+      Serial.println(keys[2]);
+  }
+  else {
+    keys = new long[3];
+    keys[0] = 20891;
+    keys[1] = 5;
+    keys[2] = 7709;
+  }
+//  EEPROM.write(addr, 1);
+  
   
 }
 
 void loop() {
-  byte a = 8;
-  EEPROM.write(addr, a);
-  uint8_t ssid[] = "somename";
-  byte value = EEPROM.read(addr);
-  Serial.println("some");
-  Serial.println(value);
+  char *status;
+  status = new char[2];
+  status[0] = EEPROM.read(addr);
+  status[1] = EEPROM.read(addr+1);
+  long a = rsa_encrypt(status, keys);
+  sprintf (buffer, "%lu", a);
+  uint8_t ssid[] = buffer[16];
+
+  
   // if (random(2)) {
   //   memcpy(ssid + 1, "", 5);
   //
