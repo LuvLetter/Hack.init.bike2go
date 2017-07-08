@@ -6,14 +6,14 @@ extern "C" {
 }
 #endif
 #include "config.h"
-#include "aes256.h"
-aes256_context ctxt;
 #include <EEPROM.h>
+#include <math.h>
 int addr = 12;
 int id = 1001;
 #define PACKET_LEN 128
 char spaces[] = {' ', '\r', '\n', '\t'};
 byte channel;
+uint8_t mac[6] = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06 };
 
 uint8_t packet[PACKET_LEN] = { 0x80, 0x00, 0x00, 0x00,
                                /*4*/   0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
@@ -30,8 +30,6 @@ uint8_t packet[PACKET_LEN] = { 0x80, 0x00, 0x00, 0x00,
                                /*56*/  0x04
                              };
 uint8_t len;
-uint8_t mac[6] = { 0x00, mac_addr1, mac_addr2, mac_addr3, mac_addr4, mac_addr5 };
-
 
 inline void constructBeaconPacket(uint8_t mac[6], uint8_t ssid_len, uint8_t *ssid, uint8_t channel) {
   uint8_t packet_end[13] = {
@@ -62,16 +60,15 @@ void setup() {
   delay(500);
   delayMicroseconds(100000);
   EEPROM.write(addr, 232);
-  
+  channel = 6;
   EEPROM.begin(512);
-  EEPROM.write(addr, 0);
-  EEPROM.write(addr+1, 0);
+  EEPROM.write(addr, 32);
   byte value = EEPROM.read(addr);
 
   
   wifi_set_opmode(STATION_MODE);
   wifi_promiscuous_enable(1);
-  wifi_set_channel(6); 
+  wifi_set_channel(channel); 
   char text[] = "233";
 //  EEPROM.write(addr, 1);
   
@@ -79,59 +76,43 @@ void setup() {
 }
 
 void loop() {
-   uint8_t key[] = { //
-    0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
-    0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
-    0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
-    0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f
-  };
-    aes256_init(&ctxt, key);
-//  uint8_t data[] = { //"asdfasdfasdfasdf"
-//    0x61, 0x73, 0x64, 0x66, 0x61, 0x73, 0x64, 0x66,
-//    0x61, 0x73, 0x64, 0x66, 0x61, 0x73, 0x64, 0x66
-//  };
-  uint8_t data[] = {
-    EEPROM.read(addr), EEPROM.read(addr+1), 0x01, 0x00, 0x00, 0x01, random(255)
-  };
-  Serial.print(EEPROM.read(addr));
-  Serial.print(EEPROM.read(addr+1));  
-//  data[0] = EEPROM.read(addr);
-//  data[1] = EEPROM.read(addr+1);
-//  data[2] = '1';
-//  data[3] = '0';
-//  data[4] = '0';
-//  data[5] = '1';
-//  data[6] = random(255)+1;
-  uint8_t ssid[8];
-  aes256_encrypt_ecb(&ctxt, data);
-  for(int i=0; i<sizeof(data); ++i) {
-    if(data[i]<0x10) {
-      Serial.print('0'); 
-    }
-    Serial.print(char(data[i]), HEX);
-    } 
-   Serial.println();
-   Serial.println(buf);
-  memcpy(ssid, data,sizeof(data));
-//  aes256_decrypt_ecb(&ctxt, data);
-  aes256_done(&ctxt);
+  uint8_t ssid[14] = {0};
+  byte slen=13;
+    
+  int stat = EEPROM.read(addr);
+  int hash = 1001;
+  int result = 0;
+  while(hash>0){
+    result = result*31+hash%10;
+    hash = hash/10;
+  }
+  result = result%10000;
+  int code = hash*10000+result%10;
+  char words[4];
+  Serial.println(code);
+  int a = result;
+  for(int i = 0;i<4;i++){
+    words[3-i]='0'+(a%10);
+    a = a/10;
+  }
+  memcpy(ssid, "B1001", 5);
+  //sprintf(words, "%d", code);
+  Serial.println("copy ID");
+  memcpy(ssid+5, words, 4);
+  Serial.println("copy hash");
+  Serial.println((char*)ssid);
   
-  // if (random(2)) {
-  //   memcpy(ssid + 1, "", 5);
-  //
-  // } else {
-  //   byte seq = random(strlen(emoji)) / 4;
-  //   memcpy(ssid, emoji + seq * 4, 4);
-  //   memcpy(ssid + 4, "-HDU", 5);
-  //   slen = 8;
-  // }
-  //Serial.print((char*)ssid);
-
-  constructBeaconPacket(mac, sizeof(ssid), ssid, channel);
+  mac[0] = 0x00;
+  mac[1] = random(256);
+  mac[2] = random(256);
+  mac[3] = random(256);
+  mac[4] = random(256);
+  mac[5] = random(256);
+  constructBeaconPacket(mac, slen, ssid, channel);
   
   wifi_send_pkt_freedom(packet, 51 + sizeof(ssid), 0);
   wifi_send_pkt_freedom(packet, 51 + sizeof(ssid), 0);
   wifi_send_pkt_freedom(packet, 51 + sizeof(ssid), 0);
-  //Serial.println(" Packets sent");
-  delayMicroseconds(100000);
+  Serial.println(" Packets sent");
+  delayMicroseconds(1000);
 }
