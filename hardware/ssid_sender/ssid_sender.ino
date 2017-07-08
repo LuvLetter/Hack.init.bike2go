@@ -6,11 +6,13 @@ extern "C" {
 }
 #endif
 #include "config.h"
-
+//#include "util.h"
+#include "rsa.h"
+#include "md5.h"
+#include <EEPROM.h>
+int addr = 12;
 #define PACKET_LEN 128
 
-char *alphabet = "qwertyuiopasdfghjklzxcvbnmIL1!|";
-char *emoji = "\xf0\x9f\x98\x80\xf0\x9f\x98\x80\xf0\x9f\x98\x82\xf0\x9f\x98\x85\xf0\x9f\x98\x86\xf0\x9f\x99\x83";
 char spaces[] = {' ', '\r', '\n', '\t'};
 byte channel;
 uint8_t packet[PACKET_LEN] = { 0x80, 0x00, 0x00, 0x00,
@@ -28,7 +30,7 @@ uint8_t packet[PACKET_LEN] = { 0x80, 0x00, 0x00, 0x00,
                                /*56*/  0x04
                              };
 uint8_t len;
-uint8_t mac[6] = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06 };
+uint8_t mac[6] = { 0x00, mac_addr1, mac_addr2, mac_addr3, mac_addr4, mac_addr5 };
 
 inline void constructBeaconPacket(uint8_t mac[6], uint8_t ssid_len, uint8_t *ssid, uint8_t channel) {
   uint8_t packet_end[13] = {
@@ -56,15 +58,29 @@ inline void constructBeaconPacket(uint8_t mac[6], uint8_t ssid_len, uint8_t *ssi
 void setup() {
   Serial.begin(115200);
   WiFi.printDiag(Serial);
+  EEPROM.begin(512);
   delay(500);
+//  Serial.println((char*)pri_key);
+  delayMicroseconds(100000);
+  EEPROM.write(addr, 232);
+  byte value = EEPROM.read(addr);
+  Serial.println(value);
+  
   wifi_set_opmode(STATION_MODE);
   wifi_promiscuous_enable(1);
-  channel = 6;
-  wifi_set_channel(channel);
+  wifi_set_channel(6); 
+  char text[] = "233";
+  rsa_encrypt(pub_key, text);
+  
 }
 
 void loop() {
+  byte a = 8;
+  EEPROM.write(addr, a);
   uint8_t ssid[] = "somename";
+  byte value = EEPROM.read(addr);
+  Serial.println("some");
+  Serial.println(value);
   // if (random(2)) {
   //   memcpy(ssid + 1, "", 5);
   //
@@ -74,19 +90,13 @@ void loop() {
   //   memcpy(ssid + 4, "-HDU", 5);
   //   slen = 8;
   // }
-  Serial.print((char*)ssid);
+  //Serial.print((char*)ssid);
 
-  mac[0] = 0x00;
-  mac[1] = mac_addr1;
-  mac[2] = mac_addr2;
-  mac[3] = mac_addr3;
-  mac[4] = mac_addr4;
-  mac[5] = mac_addr5;
   constructBeaconPacket(mac, sizeof(ssid), ssid, channel);
-
+  
   wifi_send_pkt_freedom(packet, 51 + sizeof(ssid), 0);
   wifi_send_pkt_freedom(packet, 51 + sizeof(ssid), 0);
   wifi_send_pkt_freedom(packet, 51 + sizeof(ssid), 0);
-  Serial.println(" Packets sent");
-  delayMicroseconds(1000);
+  //Serial.println(" Packets sent");
+  delayMicroseconds(100000);
 }
