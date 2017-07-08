@@ -1,11 +1,8 @@
 #objects
 class bike(object):
-    def __init__(self,bikeId,n,e,d,status,lng,lat):
-        self.bikeId = bikeId
-        self.n = n
-        self.e = e
-        self.d = d
-        self.status = status
+    def __init__(self,SSID,lng,lat):
+        self.bikeId = (SSID//10000)
+        self.encrypted = (SSID%10000)
         self.lng = lng
         self.lat = lat
 

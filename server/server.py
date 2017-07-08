@@ -6,7 +6,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 
 from bikeObj import bike
 import sqlite3 as lite
-import aes
+# import aes
 
 
 def isLegalRequest(bike):
@@ -35,16 +35,33 @@ def getPassword(bikeId,bikeStatus):
   if isLegalRequest(bikeId, bikeStatus):
     return "123"
   return
+def enc():
+  bikeno = 1001
+  result = 0
+  while(bikeno>0):
+    result = result*31 + bikeno%10
+    bikeno = bikeno//10
+  return result
+def check(bike):
+  bikeno = bike.bikeId
+  length = len(s)
+  result = 0
+  while(bikeno>0):
+    result = result*31 + bikeno%10
+    bikeno = bikeno//10
+  return (result%10000) == bike.encrypted
 
-bikeNo = 1
+bikeNo = '10017202'
 NAME = "bikedb.sqlite"
 con = lite.connect(NAME)
 c = con.cursor()
 c.execute(
-"SELECT * FROM Bikes WHERE Bid = %d"%bikeNo
+"SELECT * FROM Bikes WHERE Bid = %s"%bikeNo
 )
 rows = c.fetchall()
+print(rows)
 thisBike = bike(*rows[0])
+
 
 # ssl_cert = "/home/jhl/client-cert.pem"
 # ssl_key = "/home/jhl/client-key.pem"
@@ -59,6 +76,14 @@ thisBike = bike(*rows[0])
 # cnx = mysql.connector.connect(user='jhl', database='bikes')
 # cnx = MySQLConnection(user='jhl', database='bikes')
 
+def check(bike):
+  bikeno = bike.bikeId
+  result = 0
+  while(bikeno>0):
+    result = result*31 + bikeno%10
+    bikeno = bikeno//10
+  print(result%10000)
+  return (result%10000) == bike.encrypted
 
 def isLegalRequest(bike):
   if(decrypt(bike)!=bike.bikeId):                                       
@@ -70,20 +95,10 @@ def updateLocation(bike,lng,lat):
     bike.lng = lng
     bike.lat = lat
   return
+print(check(thisBike))
 
-def updateStatus(bike, status):
-  if(isLegalRequest(bike)):
-    bike.status = status
-  return
-
-def update(bike, bikeStatus):
-  updateLocation(bike,lng,lat)
-  updateStatus(bike, bikeStatus)
-  return 
-
-
-def getPassword(bikeId,bikeStatus):
-  if isLegalRequest(bikeId, bikeStatus):
+def getPassword(bike):
+  if isLegalRequest(bike):
     return "123"
   return
 
@@ -117,7 +132,7 @@ def run():
   httpd.serve_forever()
  
  
-run()
+# run()
 
 
 
