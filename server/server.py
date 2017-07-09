@@ -2,39 +2,11 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 # import MySQLdb
 # import os
-
-
 from bikeObj import bike
 import sqlite3 as lite
 # import aes
+import urllib
 
-
-def isLegalRequest(bike):
-  if(decrypt(bike)!=bike.bikeId):
-    return False
-  return True
-
-def updateLocation(bike,lng,lat):
-  if(isLegalRequest(bike)):
-    bike.lng = lng
-    bike.lat = lat
-  return
-
-def updateStatus(bike, status):
-  if(isLegalRequest(bike)):
-    bike.status = status
-  return
-
-def update(bike, bikeStatus):
-  updateLocation(bike,lng,lat)
-  updateStatus(bike, bikeStatus)
-  return
-
-
-def getPassword(bikeId,bikeStatus):
-  if isLegalRequest(bikeId, bikeStatus):
-    return "123"
-  return
 def enc():
   bikeno = 1001
   result = 0
@@ -42,27 +14,13 @@ def enc():
     result = result*31 + bikeno%10
     bikeno = bikeno//10
   return result
-def check(bike):
-  bikeno = bike.bikeId
-  length = len(s)
-  result = 0
-  while(bikeno>0):
-    result = result*31 + bikeno%10
-    bikeno = bikeno//10
-  return (result%10000) == bike.encrypted
 
-bikeNo = '10017202'
+
 NAME = "bikedb.sqlite"
 con = lite.connect(NAME)
 c = con.cursor()
-c.execute(
-"SELECT * FROM Bikes WHERE Bid = %s"%bikeNo
-)
-rows = c.fetchall()
-print(rows)
-thisBike = bike(*rows[0])
 
-
+# did not use cloud SQL due to the complexity of making the server
 # ssl_cert = "/home/jhl/client-cert.pem"
 # ssl_key = "/home/jhl/client-key.pem"
 # ssl_ca = "/home/jhl/server-ca.pem"
@@ -76,31 +34,15 @@ thisBike = bike(*rows[0])
 # cnx = mysql.connector.connect(user='jhl', database='bikes')
 # cnx = MySQLConnection(user='jhl', database='bikes')
 
-def check(bike):
-  bikeno = bike.bikeId
+def check(ssid):
   result = 0
-  while(bikeno>0):
-    result = result*31 + bikeno%10
-    bikeno = bikeno//10
-  print(result%10000)
-  return (result%10000) == bike.encrypted
-
-def isLegalRequest(bike):
-  if(decrypt(bike)!=bike.bikeId):
-    return False
-  return True
-
-def updateLocation(bike,lng,lat):
-  if(isLegalRequest(bike)):
-    bike.lng = lng
-    bike.lat = lat
-  return
-print(check(thisBike))
-
-def getPassword(bike):
-  if isLegalRequest(bike):
-    return "123"
-  return
+  firstFour = int(ssid[1:])//10000
+  print(firstFour)
+  while(firstFour>0):
+    result = result*31 + firstFour%10
+    firstFour = firstFour//10
+  print(result)
+  return (result%10000) == int(ssid[1:])%10000
 
 # HTTPRequestHandler class
 class testHTTPServer_RequestHandler(BaseHTTPRequestHandler):
@@ -113,7 +55,39 @@ class testHTTPServer_RequestHandler(BaseHTTPRequestHandler):
         # Send headers
         self.send_header('Content-type','text/html')
         self.end_headers()
-        parsed_path = urlparse.urlparse(self.path)
+        got = self.path
+        L = got.split("/")
+        print(L)
+        if not (L[1]== "unlock")or(L[1]=="noAction"):
+          return
+        SSID = L[2]
+        print(check(SSID))
+        if not(check(SSID)):
+            self.wfile.write(bytes("wrong", "utf8"))
+            return "error"
+        if(L[1]=="unlock"):
+          if(check(SSID)):
+            password = (104729-(int(SSID[1:])%10000))%10000
+            self.wfile.write(bytes(str(password), "utf8"))
+            return str(password)
+        lng = L[4]
+        lat = L[5]
+        if(L[3]=="update"):
+            lng = str(int(L[4])*10000)
+            lat = str(int(L[5])*10000)
+            bk = bike(int(L[2][1:]),lng,lat)
+            c.cursor("""
+              UPDATE Bikes SET Blng = %s WHERE name = %s 
+              """%(lng, name)
+            )
+            c.cursor("""
+              UPDATE Bikes SET Blat = %s WHERE name = %s 
+              """%(lat,name)
+            )
+            con.commit()
+            con.close
+
+        # parsed_path = urlparse(self.path)
         # Send message back to client
         message = "Hello world!"
         # Write content as utf-8 data
@@ -125,10 +99,10 @@ def run():
 
   # Server settings
   # Choose port 8080, for port 80, which is normally used for a http server, you need root access
-  server_address = ('127.0.0.1', 3306)
+  server_address = ('0.0.0.0', 80)
   httpd = HTTPServer(server_address, testHTTPServer_RequestHandler)
   print('running server...')
   httpd.serve_forever()
 
 
-# run()
+run()
