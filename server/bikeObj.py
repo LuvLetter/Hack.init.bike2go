@@ -8,9 +8,8 @@ class bike(object):
 
     def __eq__(self,other):
         if(isinstance(self,bike)and isinstance(other,bike)):
-            return self.bikeId == other.bikeId
+            return self.bikeId == other.bikeId and self.encrypted==other.encrypted
         return False
 
     def __repr__(self):
         return self.bikeId
-
