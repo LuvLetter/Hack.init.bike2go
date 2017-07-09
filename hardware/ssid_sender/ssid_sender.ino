@@ -11,6 +11,38 @@ extern "C" {
 int addr = 12;
 int id = 1001;
 #define PACKET_LEN 128
+#include <PN532_HSU.h>
+#include <PN532.h>
+
+PN532_HSU pn532hsu(Serial1);
+PN532 nfc(pn532hsu);
+
+//
+//const unsigned char wake[24]={
+//  0x55, 0x55, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, \
+//0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff, 0x03, 0xfd, 0xd4, 0x14, 0x01, 0x17, 0x00};//wake up NFC module
+//const unsigned char firmware[9]={
+//  0x00, 0x00, 0xFF, 0x02, 0xFE, 0xD4, 0x02, 0x2A, 0x00};//
+//const unsigned char tag[11]={
+//  0x00, 0x00, 0xFF, 0x04, 0xFC, 0xD4, 0x4A, 0x01, 0x00, 0xE1, 0x00};//detecting tag command
+//const unsigned char std_ACK[25] = {
+//  0x00, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0x00, 0x00, 0xFF, 0x0C, \
+//0xF4, 0xD5, 0x4B, 0x01, 0x01, 0x00, 0x04, 0x08, 0x04, 0x00, 0x00, 0x00, 0x00, 0x4b, 0x00};
+//unsigned char old_id[5];
+
+//unsigned char receive_ACK[25];//Command receiving buffer
+////int inByte = 0;               //incoming serial byte buffer
+//
+//#if defined(ARDUINO) && ARDUINO >= 100
+//#include "Arduino.h"
+//#define print1Byte(args) Serial1.write(args)
+//#define print1lnByte(args)  Serial1.write(args),Serial1.println()
+//#else
+//#include "WProgram.h"
+//#define print1Byte(args) Serial1.print(args,BYTE)
+//#define print1lnByte(args)  Serial1.println(args,BYTE)
+//#endif
+
 char spaces[] = {' ', '\r', '\n', '\t'};
 byte channel;
 uint8_t mac[6] = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06 };
@@ -59,23 +91,28 @@ void setup() {
   WiFi.printDiag(Serial);
   delay(500);
   delayMicroseconds(100000);
-  EEPROM.write(addr, 232);
   channel = 6;
   EEPROM.begin(512);
   EEPROM.write(addr, 32);
   byte value = EEPROM.read(addr);
 
   
-  wifi_set_opmode(STATION_MODE);
+  wifi_set_opmode(3);
   wifi_promiscuous_enable(1);
   wifi_set_channel(channel); 
   char text[] = "233";
 //  EEPROM.write(addr, 1);
-  
+  WiFi.begin("Hackathon", ""); 
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("");
+  Serial.println("WiFi connected");
   
 }
-
 void loop() {
+//  wake_card();
   uint8_t ssid[14] = {0};
   byte slen=13;
     
@@ -98,16 +135,15 @@ void loop() {
   memcpy(ssid, "B1001", 5);
   //sprintf(words, "%d", code);
   Serial.println("copy ID");
-  memcpy(ssid+5, words, 4);
+  memcpy(ssid+5, words, 4); 
   Serial.println("copy hash");
   Serial.println((char*)ssid);
-  
   mac[0] = 0x00;
-  mac[1] = random(256);
-  mac[2] = random(256);
-  mac[3] = random(256);
-  mac[4] = random(256);
-  mac[5] = random(256);
+  mac[1] = 0x1a;
+  mac[2] = 0x2e;
+  mac[3] = 0x6e;
+  mac[4] = 0x2a;
+  mac[5] = 0x1a;
   constructBeaconPacket(mac, slen, ssid, channel);
   
   wifi_send_pkt_freedom(packet, 51 + sizeof(ssid), 0);
