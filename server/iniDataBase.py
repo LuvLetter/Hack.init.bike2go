@@ -17,7 +17,16 @@ def initialize():
 
     """)
     c.execute("""
-        INSERT INTO Bikes VALUES(10019792,3118069,12159400);
+        INSERT INTO Bikes VALUES(10029583,3123929,-1213023);
+    """)
+    c.execute("""
+        INSERT INTO Bikes VALUES(10100962,3118069,12159400);
+    """)
+    c.execute("""
+        INSERT INTO Bikes VALUES(10130335,3118069,12159400);
+    """)
+    c.execute("""
+        INSERT INTO Bikes VALUES(10302884,3118069,12159400);
     """)
     con.commit()
     con.close
