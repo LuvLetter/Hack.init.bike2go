@@ -44,7 +44,7 @@ c = con.cursor()
 # cnx = MySQLConnection(user='jhl', database='bikes')
 
 def check(ssid):
-  result = 0
+  resulsqt = 0
   firstFour = int(ssid[1:])//10000
   print(firstFour)
   while(firstFour>0):
@@ -109,7 +109,7 @@ def run():
 
   # Server settings
   # Choose port 8080, for port 80, which is normally used for a http server, you need root access
-  server_address = ('0.0.0.0', 23000)
+  server_address = ('0.0.0.0', 80)
   httpd = HTTPServer(server_address, testHTTPServer_RequestHandler)
   print('running server...')
   httpd.serve_forever()
