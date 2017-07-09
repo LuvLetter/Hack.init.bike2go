@@ -15,16 +15,7 @@ def enc():
     bikeno = bikeno//10
   return result
 
-# def check(bike):
-#   bikeno = bike.bikeId
-#   length = len(s)
-#   result = 0
-#   while(bikeno>0):
-#     result = result*31 + bikeno%10
-#     bikeno = bikeno//10
-#   return (result%10000) == bike.encrypted
 
- 
 NAME = "bikedb.sqlite"
 con = lite.connect(NAME)
 c = con.cursor()
@@ -44,7 +35,7 @@ c = con.cursor()
 # cnx = MySQLConnection(user='jhl', database='bikes')
 
 def check(ssid):
-  resulsqt = 0
+  result = 0
   firstFour = int(ssid[1:])//10000
   print(firstFour)
   while(firstFour>0):
@@ -52,7 +43,6 @@ def check(ssid):
     firstFour = firstFour//10
   print(result)
   return (result%10000) == int(ssid[1:])%10000
-
 
 # HTTPRequestHandler class
 class testHTTPServer_RequestHandler(BaseHTTPRequestHandler):
@@ -109,7 +99,7 @@ def run():
 
   # Server settings
   # Choose port 8080, for port 80, which is normally used for a http server, you need root access
-  server_address = ('0.0.0.0', 80)
+  server_address = ('0.0.0.0', 40000)
   httpd = HTTPServer(server_address, testHTTPServer_RequestHandler)
   print('running server...')
   httpd.serve_forever()
